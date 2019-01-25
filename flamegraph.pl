@@ -118,7 +118,6 @@ my %palette_map;                # palette map hash
 my $pal_file = "palette.map";   # palette map file name
 my $stackreverse = 0;           # reverse stack order, switching merge end
 my $inverted = 0;               # icicle graph
-my $flamechart = 0;             # produce a flame chart (sort by time, do not merge stacks)
 my $negate = 0;                 # switch differential hues
 my $titletext = "";             # centered heading
 my $titledefault = "Flame Graph";	# overwritten by --title
@@ -147,7 +146,6 @@ USAGE: $0 [options] infile > outfile.svg\n
 	--cp             # use consistent palette (palette.map)
 	--reverse        # generate stack-reversed flame graph
 	--inverted       # icicle graph
-	--flamechart     # produce a flame chart (sort by time, do not merge stacks)
 	--negate         # switch differential hues (blue<->red)
 	--notes TEXT     # add notes comment in SVG (for debugging)
 	--help           # this message
@@ -177,7 +175,6 @@ GetOptions(
 	'cp'          => \$palette,
 	'reverse'     => \$stackreverse,
 	'inverted'    => \$inverted,
-	'flamechart'  => \$flamechart,
 	'negate'      => \$negate,
 	'notes=s'     => \$notestext,
 	'help'        => \$help,
@@ -193,10 +190,6 @@ my $framepad = 1;		# vertical padding for frames
 my $depthmax = 0;
 my %Events;
 my %nameattr;
-
-if ($flamechart && $titletext eq "") {
-	$titletext = "Flame Chart";
-}
 
 if ($titletext eq "") {
 	unless ($inverted) {
@@ -381,17 +374,17 @@ sub color {
 		# best as possible. Without annotations, we get a little hacky
 		# and match on java|org|com, etc.
 		if ($name =~ m:_\[j\]$:) {	# jit annotation
-			$type = "green";
+			$type = "red";
 		} elsif ($name =~ m:_\[i\]$:) {	# inline annotation
-			$type = "aqua";
-		} elsif ($name =~ m:^L?(java|org|com|io|sun)/:) {	# Java
 			$type = "green";
+		} elsif ($name =~ m:^L?(java|org|com|io|sun)/:) {	# Java
+			$type = "aqua";
 		} elsif ($name =~ m:_\[k\]$:) {	# kernel annotation
 			$type = "orange";
 		} elsif ($name =~ /::/) {	# C++
 			$type = "yellow";
 		} else {			# system
-			$type = "red";
+			$type = "yellow";
 		}
 		# fall-through to color palettes
 	}
@@ -571,7 +564,6 @@ sub flow {
 
 # parse input
 my @Data;
-my @SortedData;
 my $last = [];
 my $time = 0;
 my $delta = undef;
@@ -600,15 +592,8 @@ foreach (<>) {
 	}
 }
 
-if ($flamechart) {
-	# In flame chart mode, just reverse the data so time moves from left to right.
-	@SortedData = reverse @Data;
-} else {
-	@SortedData = sort @Data;
-}
-
 # process and merge frames
-foreach (@SortedData) {
+foreach (sort @Data) {
 	chomp;
 	# process: folded_stack count
 	# eg: func_a;func_b;func_c 31
