@@ -15,6 +15,7 @@ cat $file | sed -e 's/\$\$Lambda\$[0-9]\+\/[0-9]\+/\$lambda\$/g' | sed -e 's/\$P
 cat $file.collapsed | $FGDIR/flamegraph.pl $FLAME_GRAPH_OPTIONS > $file.svg
 
 grep -e 'OnlineImporterImpl.importByNotification' $file.collapsed | $FGDIR/flamegraph.pl $FLAME_GRAPH_OPTIONS > $file-import.svg
+grep -e 'AssetsController.getVertices' $file.collapsed | $FGDIR/flamegraph.pl $FLAME_GRAPH_OPTIONS > $file-getVertices.svg
 
 perl -pe 's/.*?c.a.s.g.NewFinancialGraphManager.performGraphWriteOperation/GRAPH_WRITE/' $file.collapsed | grep GRAPH_WRITE | $FGDIR/flamegraph.pl $FLAME_GRAPH_OPTIONS > $file-graph-writes.svg
 perl -pe 's/.*?c.a.s.g.NewFinancialGraphManager.performGraphWriteOperation/GRAPH_WRITE/' $file.collapsed | grep GRAPH_WRITE | grep writeOperationInternal | $FGDIR/flamegraph.pl $FLAME_GRAPH_OPTIONS > $file-inside-graph-writes.svg
