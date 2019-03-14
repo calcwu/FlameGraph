@@ -168,7 +168,9 @@ clear:
 		$state = "NETWORK" if $func =~ /socketRead0$/;
 
 	} elsif (/^\s*-/ or /^2\d\d\d-/ or /^Full thread dump/ or
-		 /^JNI global references:/) {
+		 /^JNI global refs:/ or /^Threads class SMR info/ or
+		 /^_java_thread_list=/ or
+		 /^0x*/ or /^}/) {
 		# skip these info lines
 		next;
 	} else {
