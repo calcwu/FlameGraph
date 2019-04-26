@@ -11,6 +11,6 @@ echo "Collecting stacks from $adia_pid"
 
 for idx in $(seq 1 120); do
     echo $idx $(date)
-    jstack $adia_pid >> /adia4/adia4.$(date +%Y%m%d).stack
+    jstack $adia_pid >> /root/adia4/adia4.$(date +%Y%m%d).stack
     sleep 30;
 done

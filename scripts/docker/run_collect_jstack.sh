@@ -1,3 +1,3 @@
 #!/bin/bash
 
-/adia4/collect_jstack.sh &> /adia4/collect.log &
+/root/adia4/collect_jstack.sh &> /root/adia4/collect.log &
