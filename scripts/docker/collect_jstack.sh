@@ -1,6 +1,7 @@
 #!/bin/bash
 
-adia_pid=`ps -ef | grep java | grep adiad | awk 'FNR>1 {print $2}'`
+#adia_pid=`ps -ef | grep java | grep adiad | awk 'FNR>1 {print $2}'`
+adia_pid=1
 
 if ! [[ "$adia_pid" =~ ^[0-9]+$ ]]
     then
